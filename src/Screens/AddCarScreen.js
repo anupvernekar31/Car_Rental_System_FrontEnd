@@ -17,6 +17,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import { useDispatch } from "react-redux";
 
 const allBrands = [
   { label: "MERCEDES", value: "MERCEDES" },
@@ -69,6 +70,7 @@ const AddCarScreen = ({ route }) => {
   const [refreshedCars, setRefreshedCars] = useState([]);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const renderLabel = () => {
     if (brand || isFocus) {
@@ -92,6 +94,7 @@ const AddCarScreen = ({ route }) => {
   );
 
   const getAllCars = () => {
+    dispatch
     console.log(">>>>>>>ggggggggggggggggg");
     const url = "http://192.168.1.3:9000/api/admin/cars";
     fetch(url)

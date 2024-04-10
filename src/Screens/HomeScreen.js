@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Button,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,31 +10,30 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import { getCarsFetch } from "../Redux/carSlice/carSlice";
 
 const menu = require("../Assets/icons/menu.png");
 const face = require("../Assets/face.png");
 const magnifying_glass = require("../Assets/icons/magnifying-glass.png");
 
-const image_v_1 = require("../Assets/vehicles/v-1.png");
-const image_v_2 = require("../Assets/vehicles/v-2.png");
-const image_v_3 = require("../Assets/vehicles/v-3.png");
-const image_v_4 = require("../Assets/vehicles/v-4.png");
-const image_v_5 = require("../Assets/vehicles/v-5.png");
-
-import data from "../dataset/vehicles.json";
-import { useNavigation } from "@react-navigation/native";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-
 const HomeScreen = ({ route }) => {
-  console.log();
+  const reduxcars = useSelector((state) => state.cars.cars);
+  const isloading = useSelector((state) => state.cars.isLoading);
+  const dispatch = useDispatch();
   const { isAdmin } = route.params;
   const { refreshedCars } = route.params;
   const navigation = useNavigation();
   const [cars, setCars] = useState(refreshedCars ? refreshedCars : []);
   const [filteredCars, setFilteredCars] = useState(cars);
   const [loading, setLoading] = useState(false);
- 
+
+  useEffect(() => {
+    dispatch(getCarsFetch());
+  }, [dispatch]);
+
+  console.log("============>>>>>>>>>DISPATCH CARS", reduxcars.length);
 
   useEffect(() => {
     const getAllCars = () => {
@@ -53,13 +51,6 @@ const HomeScreen = ({ route }) => {
     getAllCars();
   }, [refreshedCars]);
 
-  const getImage = (id) => {
-    if (id == 1) return image_v_1;
-    if (id == 2) return image_v_2;
-    if (id == 3) return image_v_3;
-    if (id == 4) return image_v_4;
-    if (id == 5) return image_v_5;
-  };
 
   const searchCars = (keyword) => {
     const lowercasedKeyword = keyword.toLowerCase();
@@ -253,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   searchInput: {
-    width: 275,
+    width: 235,
     height: 30,
     fontSize: 20,
 

@@ -10,6 +10,8 @@ import {
   Image,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { store } from "./src/Redux/store";
+import { Provider } from "react-redux";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -163,19 +165,21 @@ function BottomStackAdmin({ route }) {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SignIn"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="SignIn" component={SignIn} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Bottom" component={BottomStack} />
-        <Stack.Screen name="AdminHome" component={BottomStackAdmin} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="SignIn"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="Bottom" component={BottomStack} />
+          <Stack.Screen name="AdminHome" component={BottomStackAdmin} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

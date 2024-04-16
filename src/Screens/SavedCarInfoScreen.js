@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import data from "../dataset/vehicles.json";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,26 +21,45 @@ import {
 const back = require("../Assets/icons/left-arrow.png");
 const dots = require("../Assets/icons/dots.png");
 
-const InfoScreen = ({ route, navigation }) => {
+const image_v_1 = require("../Assets/vehicles/v-1.png");
+const image_v_2 = require("../Assets/vehicles/v-2.png");
+const image_v_3 = require("../Assets/vehicles/v-3.png");
+const image_v_4 = require("../Assets/vehicles/v-4.png");
+
+const SavedCarInfoScreen = ({ route, navigation }) => {
   const vehicle = route.params.car;
-  const userId = route.params.userId;
   const dispatch = useDispatch();
   const cars = useSelector((state) => state.cars.cars);
+  const thisCar = cars.find((item) => item.id === vehicle.id);
   const isDeleting = useSelector((state) => state.cars.isDeleting);
   const [refreshedCars, setRefreshedCars] = useState([]);
+  const isFavourite = thisCar.favourite;
   const { isAdmin } = route.params;
+  const getImage = (id) => {
+    if (id == 1) return image_v_1;
+    if (id == 2) return image_v_2;
+    if (id == 3) return image_v_3;
+    if (id == 4) return image_v_4;
+  };
 
-  const displayedCar = cars.find((item) => item.id === vehicle.id);
+  const favouritePressed = (id) => {
+
+    const newCar = { ...thisCar, favourite: !thisCar.favourite };
+
+    dispatch(updateCar({ id, newCar }));
+    // setTimeout(() => {
+    //   dispatch(updateCarSuccess());
+    //   navigation.navigate("Initial");
+    // }, 1000);
+
+    // dispatch(updateCar())
+  };
 
   const handleDelete = (id) => {
-    setTimeout(() => {
-      dispatch(deleteCar(id));
-    }, 1000);
-
-    navigation.navigate("Initial");
-
+    dispatch(deleteCar(id));
     setTimeout(() => {
       dispatch(deleteCarSuccess());
+      navigation.navigate("Initial");
     }, 1000);
   };
 
@@ -58,8 +78,9 @@ const InfoScreen = ({ route, navigation }) => {
             />
           </TouchableOpacity>
 
-          <View style={{ flexDirection: "row", gap: 20 }}>
+          <View style={{flexDirection:"row", gap:20}}>
             <TouchableOpacity
+              onPress={() => favouritePressed(vehicle.id)}
               style={{
                 zIndex: 1,
                 paddingTop: 3,
@@ -68,7 +89,7 @@ const InfoScreen = ({ route, navigation }) => {
                 height: 30,
               }}
             >
-              {true ? (
+              {isFavourite ? (
                 <AntDesign name="heart" size={24} color="black" />
               ) : (
                 <AntDesign name="hearto" size={24} color="black" />
@@ -144,25 +165,15 @@ const InfoScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        <TouchableOpacity
-          onPress={() => {
-            // navigation.goBack();
-            !displayedCar.booked
-              ? navigation.navigate("Book", { car: vehicle, userId })
-              : null;
-          }}
-          style={styles.rentButton}
-        >
-          <Text style={styles.rentButtonText}>
-            {displayedCar.booked ? "Booked " : "Rent a Car"}
-          </Text>
+        <TouchableOpacity style={styles.rentButton}>
+          <Text style={styles.rentButtonText}>Rent a Car</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
-export default InfoScreen;
+export default SavedCarInfoScreen;
 
 const styles = StyleSheet.create({
   safeArea: {

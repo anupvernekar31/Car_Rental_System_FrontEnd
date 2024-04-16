@@ -25,6 +25,11 @@ import SignIn from "./src/Screens/SignIn";
 import SignUp from "./src/Screens/SignUp";
 import AddCarScreen from "./src/Screens/AddCarScreen";
 import EditScreen from "./src/Screens/EditScreen";
+import SavedCarInfoScreen from "./src/Screens/SavedCarInfoScreen";
+import BookingScreen from "./src/Screens/BookingScreen";
+import MyBookingsScreen from "./src/Screens/MyBookingsScreen";
+import AdminBookingsScreen from "./src/Screens/AdminBookingsScreen";
+import { Ionicons } from "@expo/vector-icons";
 
 const homeIcon_active = require("./src/Assets/icons/home-active.png");
 const homeIcon = require("./src/Assets/icons/home.png");
@@ -40,8 +45,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeStack({ route }) {
-  const { isAdmin } = route.params;
-  console.log(">>>>>>", isAdmin);
+  const { isAdmin, userId } = route.params;
   return (
     <Stack.Navigator
       screenOptions={{
@@ -51,16 +55,54 @@ function HomeStack({ route }) {
       <Stack.Screen
         name="Initial"
         component={HomeScreen}
-        initialParams={{ isAdmin }}
+        initialParams={{ isAdmin, userId }}
       />
-      <Stack.Screen name="Info" component={InfoScreen} />
-      <Stack.Screen name="Edit" component={EditScreen} />
+      <Stack.Screen
+        options={{ headerShown: false, presentation: "modal" }}
+        name="Info"
+        component={InfoScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+      <Stack.Screen
+        name="Edit"
+        component={EditScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+      <Stack.Screen
+        options={{ headerShown: false, presentation: "modal" }}
+        name="Book"
+        component={BookingScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function SavedStack({ route }) {
+  const { isAdmin, userId } = route.params;
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen
+        name="SavedInitial"
+        component={SavedScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+      <Stack.Screen
+        options={{ headerShown: false, presentation: "modal" }}
+        name="SavedInfo"
+        component={SavedCarInfoScreen}
+        initialParams={{ isAdmin, userId }}
+      />
     </Stack.Navigator>
   );
 }
 
 function BottomStack({ route }) {
-  const { isAdmin } = route.params;
+  const { isAdmin, userId } = route.params;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -73,8 +115,92 @@ function BottomStack({ route }) {
             iconName = focused ? compass_active : compass;
           } else if (route.name === "Saved") {
             iconName = focused ? savedIcon_active : savedIcon;
+          } else if (route.name === "Bookings") {
+            return (
+              <Ionicons
+                name="calendar-sharp"
+                size={24}
+                color={focused ? "white" : "gray"}
+              />
+            );
+          } else {
+            iconName = focused ? settingsIcon_active : settingsIcon;
+          }
+          return (
+            <Image
+              source={iconName}
+              resizeMode="contain"
+              style={styles.footerIcon}
+            />
+          );
+        },
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: "black",
+          borderRadius: 50,
+          padding: 10,
+          position: "absolute",
+          // borderTopStartRadius: 40,
+          // borderTopEndRadius: 40,
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeStack}
+        initialParams={{ isAdmin, userId }}
+      />
+      {/* <Tab.Screen name="Map" component={MapScreen} /> */}
+      {/* <Tab.Screen
+        name="Saved"
+        component={SavedStack}
+        initialParams={{ isAdmin, userId }}
+      /> */}
+
+      <Tab.Screen
+        name="Bookings"
+        component={MyBookingsScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function BottomStackAdmin({ route }) {
+  const { isAdmin, userId } = route.params;
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused }) => {
+          let iconName;
+          if (route.name === "Home") {
+            iconName = focused ? homeIcon_active : homeIcon;
+          } else if (route.name === "Saved") {
+            iconName = focused ? savedIcon_active : savedIcon;
+          } else if (route.name === "AdminBookings") {
+            return (
+              <Ionicons
+                name="calendar-sharp"
+                size={24}
+                color={focused ? "white" : "gray"}
+              />
+            );
           } else if (route.name === "AddCar") {
-            iconName = focused ? addIcon : addIcon;
+            return (
+              <MaterialIcons
+                name="add-circle-outline"
+                size={28}
+                color={focused ? "white" : "gray"}
+              />
+            );
           } else {
             iconName = focused ? settingsIcon_active : settingsIcon;
           }
@@ -100,65 +226,28 @@ function BottomStack({ route }) {
       <Tab.Screen
         name="Home"
         component={HomeStack}
-        initialParams={{ isAdmin }}
+        initialParams={{ isAdmin, userId }}
       />
-      {/* <Tab.Screen name="Map" component={MapScreen} /> */}
-      <Tab.Screen name="Saved" component={SavedScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-    </Tab.Navigator>
-  );
-}
-
-function BottomStackAdmin({ route }) {
-  const { isAdmin } = route.params;
-
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ focused }) => {
-          let iconName;
-          if (route.name === "Home") {
-            iconName = focused ? homeIcon_active : homeIcon;
-          } else if (route.name === "Saved") {
-            iconName = focused ? savedIcon_active : savedIcon;
-          } else if (route.name === "AddCar") {
-            iconName = focused ? addIcon : addIcon;
-          } else {
-            iconName = focused ? settingsIcon_active : settingsIcon;
-          }
-          return route.name == "AddCar" ? (
-            <MaterialIcons
-              name="add-circle-outline"
-              size={28}
-              color={focused ? "white" : "gray"}
-            />
-          ) : (
-            <Image
-              source={iconName}
-              resizeMode="contain"
-              style={styles.footerIcon}
-            />
-          );
-        },
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: "black",
-          borderRadius: 50,
-          padding: 10,
-          position: "absolute",
-          borderTopStartRadius: 40,
-          borderTopEndRadius: 40,
-        },
-      })}
-    >
       <Tab.Screen
-        name="Home"
-        component={HomeStack}
-        initialParams={{ isAdmin }}
+        name="AddCar"
+        component={AddCarScreen}
+        initialParams={{ isAdmin, userId }}
       />
-      <Tab.Screen name="AddCar" component={AddCarScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      {/* <Tab.Screen
+        name="Saved"
+        component={SavedStack}
+        initialParams={{ isAdmin, userId }}
+      /> */}
+      <Tab.Screen
+        name="AdminBookings"
+        component={AdminBookingsScreen}
+        initialParams={{ isAdmin, userId }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        initialParams={{ isAdmin, userId }}
+      />
     </Tab.Navigator>
   );
 }

@@ -13,56 +13,41 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { getCarsFetch } from "../Redux/carSlice/carSlice";
+import { Fontisto } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const menu = require("../Assets/icons/menu.png");
-const face = require("../Assets/face.png");
 const magnifying_glass = require("../Assets/icons/magnifying-glass.png");
 
 const HomeScreen = ({ route }) => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const reduxcars = useSelector((state) => state.cars.cars);
   const isloading = useSelector((state) => state.cars.isLoading);
-  const dispatch = useDispatch();
+
   const { isAdmin } = route.params;
-  const { refreshedCars } = route.params;
-  const navigation = useNavigation();
-  const [cars, setCars] = useState(refreshedCars ? refreshedCars : []);
-  const [filteredCars, setFilteredCars] = useState(cars);
-  const [loading, setLoading] = useState(false);
+  const [filteredCars, setFilteredCars] = useState(reduxcars);
 
   useEffect(() => {
     dispatch(getCarsFetch());
   }, [dispatch]);
 
-  console.log("============>>>>>>>>>DISPATCH CARS", reduxcars.length);
-
   useEffect(() => {
-    const getAllCars = () => {
-      setLoading(true);
-      const url = "http://192.168.1.3:9000/api/admin/cars";
-      fetch(url)
-        .then((response) => response.json())
-        .then((json) => {
-          setCars(json);
-          setFilteredCars(json);
-          setLoading(false);
-        })
-        .catch((err) => console.log(err));
-    };
-    getAllCars();
-  }, [refreshedCars]);
-
+    setFilteredCars(reduxcars.filter((item) => item.booked !== true));
+  }, [reduxcars]);
 
   const searchCars = (keyword) => {
     const lowercasedKeyword = keyword.toLowerCase();
 
-    const results = cars.filter((car) => {
+    const searchResults = reduxcars.filter((car) => {
       return (
-        car.brand.toLowerCase().includes(lowercasedKeyword) ||
-        car.type.toLowerCase().includes(lowercasedKeyword)
+        car.booked == false &&
+        (car.brand.toLowerCase().includes(lowercasedKeyword) ||
+          car.type.toLowerCase().includes(lowercasedKeyword))
       );
     });
 
-    setFilteredCars(results);
+    setFilteredCars(searchResults);
   };
 
   return (
@@ -74,15 +59,37 @@ const HomeScreen = ({ route }) => {
             resizeMode="contain"
             style={styles.menuIconStyle}
           />
-          <Image
+          {/* <Image
             source={face}
             resizeMode="contain"
             style={styles.faceIconStyle}
-          />
+          /> */}
+          <View
+            style={{
+              backgroundColor: "white",
+              width: 40,
+              height: 40,
+              // borderRadius: "100",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Ionicons name="person" size={24} color="gray" />
+          </View>
         </View>
 
         <View style={styles.titleSection}>
           <Text style={styles.title}>Rent a Car</Text>
+          <TouchableOpacity
+            onPress={() => dispatch(getCarsFetch())}
+            style={{ justifyContent: "center", paddingLeft: 22 }}
+          >
+            {isloading ? (
+              <ActivityIndicator size={26} color="white" />
+            ) : (
+              <Fontisto name="spinner-refresh" size={24} color="black" />
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.searchSection}>
@@ -118,10 +125,11 @@ const HomeScreen = ({ route }) => {
         </View>
 
         <View style={styles.listSection}>
-          <Text style={styles.headText}>Most Rented</Text>
-          {/* <Button onPress={getAllCars} title="Refresh"></Button> */}
+          {filteredCars.length > 0 && (
+            <Text style={styles.headText}>Most Rented</Text>
+          )}
 
-          {!loading ? (
+          {!isloading ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
               style={styles.elementPallet}
@@ -188,7 +196,7 @@ const HomeScreen = ({ route }) => {
               <ActivityIndicator size={30} color={"black"} />
             </View>
           )}
-          <View style={{ paddingBottom: 150 }}></View>
+          <View style={{ paddingBottom: 120 }}></View>
         </View>
       </View>
     </SafeAreaView>
@@ -223,6 +231,7 @@ const styles = StyleSheet.create({
 
   titleSection: {
     marginTop: 15,
+    flexDirection: "row",
   },
   title: {
     fontSize: 32,
@@ -231,8 +240,7 @@ const styles = StyleSheet.create({
 
   searchSection: {
     marginTop: 15,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingHorizontal: 5,
     justifyContent: "center",
   },
   searchPallet: {
@@ -259,7 +267,7 @@ const styles = StyleSheet.create({
   magnifyingIconStyle: {
     width: 24,
     height: 24,
-    marginRight: -10,
+    marginRight: -20,
   },
 
   typesSection: {
@@ -295,8 +303,10 @@ const styles = StyleSheet.create({
     marginLeft: -15,
     // paddingLeft: 15,
     // paddingRight: 15,
+    paddingHorizontal: 10,
     width: "110%",
     height: 500,
+    marginBottom: 50,
   },
   element: {
     height: 100,

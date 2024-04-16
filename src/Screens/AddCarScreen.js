@@ -17,7 +17,12 @@ import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { useDispatch } from "react-redux";
+import {
+  addCar,
+  addCarSuccess,
+  getCarsFetch,
+} from "../Redux/carSlice/carSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const allBrands = [
   { label: "MERCEDES", value: "MERCEDES" },
@@ -54,6 +59,7 @@ const transmissions = [
 ];
 
 const AddCarScreen = ({ route }) => {
+  const isAdding = useSelector((state) => state.cars.isAdding);
   const car = route.params?.car;
   const [brand, setBrand] = useState(null);
   const [model, setModel] = useState(null);
@@ -64,10 +70,8 @@ const AddCarScreen = ({ route }) => {
   const [price, setPrice] = useState(null);
   const [year, setYear] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-  const [adding, setAdding] = useState(false);
-
   const [image, setImage] = useState(null);
-  const [refreshedCars, setRefreshedCars] = useState([]);
+  const [addingImage, setAddingImage] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -93,23 +97,7 @@ const AddCarScreen = ({ route }) => {
     year
   );
 
-  const getAllCars = () => {
-    dispatch
-    console.log(">>>>>>>ggggggggggggggggg");
-    const url = "http://192.168.1.3:9000/api/admin/cars";
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        console.log("================length", json.length);
-        navigation.navigate("Initial", { refreshedCars: json });
-        setAdding(false);
-        setRefreshedCars(json);
-      })
-      .catch((err) => console.log(err));
-  };
-
   const handleAddCar = () => {
-    setAdding(true);
     const newCar = {
       brand,
       colour: color,
@@ -121,41 +109,24 @@ const AddCarScreen = ({ route }) => {
       year,
       image,
     };
-
-    const url = "http://192.168.1.3:9000/api/admin/car";
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(newCar),
-    })
-      .then((response) => response)
-      .then((json) => {
-        if (json.status == 201) {
-          // setBrand(null);
-          // setColor(null);
-          // setDescription(null);
-          // setImage(null);
-          // setModel(null);
-          // setType(null);
-          // setTransmission(null);
-          // setPrice(null);
-          // setYear(null);
-        } else {
-          Alert.alert("Something went wrong");
-        }
-      })
-      .catch((err) => console.log(err));
-
+    dispatch(addCar(newCar));
     setTimeout(() => {
-      getAllCars();
-      console.log("??????", refreshedCars.length);
-    }, 2000);
+      dispatch(addCarSuccess());
+      navigation.navigate("Initial");
+      // setBrand(null);
+      // setColor(null);
+      // setDescription(null);
+      // setImage(null);
+      // setModel(null);
+      // setType(null);
+      // setTransmission(null);
+      // setPrice(null);
+      // setYear(null);
+    }, 1000);
   };
 
   const pickImage = async () => {
+    setAddingImage(true);
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       base64: true,
@@ -164,8 +135,6 @@ const AddCarScreen = ({ route }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (result.assets.mimeType == "image/jpeg") {
       base64Image = "data:image/jpeg;base64," + result.assets[0].base64;
@@ -194,13 +163,12 @@ const AddCarScreen = ({ route }) => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? "Select item" : "..."}
+            placeholder={ "Select Brand"}
             searchPlaceholder="Search..."
             value={brand}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={(item) => {
-              console.log("lll", item.value);
               setBrand(item.value);
               setIsFocus(false);
             }}
@@ -314,7 +282,7 @@ const AddCarScreen = ({ route }) => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={"Select Type"}
+            placeholder={"Select Transmission"}
             searchPlaceholder="Search..."
             value={transmission}
             onFocus={() => setIsFocus(true)}
@@ -381,11 +349,11 @@ const AddCarScreen = ({ route }) => {
         </View>
         <View className="px-10 flex-1 mb-20">
           <TouchableOpacity
-            disabled={disabled || adding}
+            disabled={disabled || isAdding}
             onPress={handleAddCar}
             className="w-full bg-black p-3 rounded-2xl mb-3"
           >
-            {!adding ? (
+            {!isAdding ? (
               <Text className="text-xl font-bold text-white text-center">
                 {"Add Car"}
               </Text>

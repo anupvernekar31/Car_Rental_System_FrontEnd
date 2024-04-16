@@ -17,7 +17,7 @@ const SignUp = () => {
       password,
     };
 
-    const url = "http://192.168.1.3:9000/api/auth/signup";
+    const url = "http://192.168.1.7:9000/api/auth/signup";
     fetch(url, {
       method: "POST",
       headers: {
@@ -28,7 +28,6 @@ const SignUp = () => {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log("======1111111111", json);
         if (json.id) {
             navigation.replace("Bottom", json);
         }

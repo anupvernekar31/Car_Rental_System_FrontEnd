@@ -6,6 +6,8 @@ const carSlice = createSlice({
     cars: [],
     isLoading: false,
     isAdding: false,
+    isDeleting: false,
+    isUpdating: false,
   },
   reducers: {
     getCarsFetch: (state) => {
@@ -27,16 +29,40 @@ const carSlice = createSlice({
     addCarFailure: (state, action) => {
       state.isAdding = false;
     },
+    updateCar: (state) => {
+      state.isUpdating = true;
+    },
+    updateCarSuccess: (state) => {
+      state.isUpdating = false;
+    },
+    updateCarFailure: (state) => {
+      state.isUpdating = false;
+    },
+    deleteCar: (state) => {
+      state.isDeleting = true;
+    },
+    deleteCarSuccess: (state, action) => {
+      state.isDeleting = false;
+    },
+    deleteCarFailure: (state) => {
+      state.isDeleting = false;
+    },
   },
 });
 
 export const {
-  getCarsFailure,
-  getCarsSuccess,
   getCarsFetch,
+  getCarsSuccess,
+  getCarsFailure,
   addCar,
-  addCarFailure,
   addCarSuccess,
+  addCarFailure,
+  updateCar,
+  updateCarSuccess,
+  updateCarFailure,
+  deleteCar,
+  deleteCarSuccess,
+  deleteCarFailure,
 } = carSlice.actions;
 
 export default carSlice.reducer;

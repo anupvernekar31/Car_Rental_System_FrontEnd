@@ -22,7 +22,7 @@ const SignIn = () => {
       password,
     };
 
-    const url = "http://192.168.1.3:9000/api/auth/login";
+    const url = "http://192.168.1.7:9000/api/auth/login";
     fetch(url, {
       method: "POST",
       headers: {
@@ -34,10 +34,12 @@ const SignIn = () => {
       .then((response) => response.json())
       .then((json) => {
         if (json.userId == 1) {
-          console.log("===>>>", json);
-          navigation.replace("AdminHome", { isAdmin: true });
+          navigation.replace("AdminHome", {
+            isAdmin: true,
+            userId: json.userId,
+          });
         } else if (json.userId != 1) {
-          navigation.replace("Bottom", { isAdmin: false } );
+          navigation.replace("Bottom", { isAdmin: false, userId: json.userId });
         } else {
           Alert.alert("Something went wrong");
         }

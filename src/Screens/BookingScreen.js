@@ -38,7 +38,7 @@ const BookingScreen = ({ route }) => {
       userId,
       carId,
     };
-    const url = "http://192.168.1.7:9000/api/customer/car/book";
+    const url = "http://localhost:9000/api/customer/car/book";
     fetch(url, {
       method: "POST",
       headers: {

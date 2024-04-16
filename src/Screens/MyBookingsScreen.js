@@ -19,7 +19,7 @@ const MyBookingsScreen = ({ route }) => {
   const [myBookings, setMyBookings] = useState([]);
 
   const getMyBookings = (userId) => {
-    const url = `http://192.168.1.7:9000/api/customer/car/bookings/${userId}`;
+    const url = `http://localhost:9000/api/customer/car/bookings/${userId}`;
 
     fetch(url, {
       method: "GET",

@@ -4,7 +4,7 @@ import { getCarsFetch } from "../carSlice/carSlice";
 
 function* workAddFavourite(data) {
   const { carId, userId } = data.payload;
-  const url = `http://192.168.1.7:9000/api/admin/favourite/car/${carId}`;
+  const url = `http://localhost:9000/api/admin/favourite/car/${carId}`;
   const response = yield call(() => {
     fetch(url, {
       method: "PUT",
@@ -23,7 +23,7 @@ function* workAddFavourite(data) {
 
 function* workGetFavourites(data) {
   const { userId } = data.payload;
-  const url = `http://192.168.1.7:9000/api/admin/favourite`;
+  const url = `http://localhost:9000/api/admin/favourite`;
   const response = yield call(() => {
     fetch(url, {
       method: "GET",

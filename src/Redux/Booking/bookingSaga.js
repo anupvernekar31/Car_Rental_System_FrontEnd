@@ -2,7 +2,7 @@ import { call, put, take, takeEvery } from "redux-saga/effects";
 import { confirmBooking, getBookings, getBookingsSuccess } from "./bookingSlice";
 
 function* workGetBookings() {
-  const url = `http://192.168.1.7:9000/api/admin/car/bookings`;
+  const url = `http://localhost:9000/api/admin/car/bookings`;
   const response = yield call(() =>
     fetch(url, {
       method: "GET",
@@ -19,7 +19,7 @@ function* workGetBookings() {
 
 function* workConfirmBooking(data){
     const { item, status} = data.payload;
-    const url = `http://192.168.1.7:9000/api/admin/car/booking/${item.id}/${status}`;
+    const url = `http://localhost:9000/api/admin/car/booking/${item.id}/${status}`;
     const response = yield call(() =>
     fetch(url, {
       method: "GET",

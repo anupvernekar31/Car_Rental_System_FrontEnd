@@ -22,7 +22,7 @@ const SignIn = () => {
       password,
     };
 
-    const url = "http://192.168.1.7:9000/api/auth/login";
+    const url = "http://localhost:9000/api/auth/login";
     fetch(url, {
       method: "POST",
       headers: {

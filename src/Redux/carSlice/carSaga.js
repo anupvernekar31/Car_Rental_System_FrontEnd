@@ -3,7 +3,7 @@ import { addCar, addCarSuccess, deleteCar, deleteCarSuccess, getCarsFetch, getCa
 
 function* workGetCarsFetch() {
   const cars = yield call(() =>
-    fetch("http://192.168.1.7:9000/api/admin/cars")
+    fetch("http://localhost:9000/api/admin/cars")
   );
   const formatedCars = yield cars.json();
   yield put(getCarsSuccess(formatedCars));
@@ -11,7 +11,7 @@ function* workGetCarsFetch() {
 
 function* workAddCar(data) {
   const newCar = data.payload;
-  const url = "http://192.168.1.7:9000/api/admin/car";
+  const url = "http://localhost:9000/api/admin/car";
   const response = yield call(() =>
     fetch(url, {
       method: "POST",
@@ -31,7 +31,7 @@ function* workAddCar(data) {
 function* workUpdateCar(data) {
   
   const {newCar, id} = data.payload;
-  const url = `http://192.168.1.7:9000/api/admin/car/${id}`;
+  const url = `http://localhost:9000/api/admin/car/${id}`;
   const response = yield call(() =>
     fetch(url, {
       method: "PUT",
@@ -50,7 +50,7 @@ function* workUpdateCar(data) {
 
 function* workDeleteCar(data) {
   const id = data.payload;
-  const url = `http://192.168.1.7:9000/api/admin/car/${id}`;
+  const url = `http://localhost:9000/api/admin/car/${id}`;
   const response = yield call(() =>
     fetch(url, {
       method: "DELETE",
